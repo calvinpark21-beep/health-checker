@@ -93,7 +93,17 @@ ${painAnalysisRequest}
 export default function AIAnalysis({ data, painData }) {
   const [report, setReport] = useState('');
   const [loading, setLoading] = useState(false);
-  const [apiKey, setApiKey] = useState(import.meta.env.VITE_ANTHROPIC_API_KEY || '');
+  const [apiKey, setApiKey] = useState(
+    import.meta.env.VITE_ANTHROPIC_API_KEY ||
+    localStorage.getItem('health_api_key') || ''
+  );
+
+  function handleKeyChange(e) {
+    const key = e.target.value;
+    setApiKey(key);
+    if (key) localStorage.setItem('health_api_key', key);
+    else localStorage.removeItem('health_api_key');
+  }
 
   const hasPainData = Object.keys(painData).some(dateKey =>
     PARTS.some(p => painData[dateKey]?.[p]?.score !== '' && painData[dateKey]?.[p]?.score != null)
@@ -153,7 +163,7 @@ export default function AIAnalysis({ data, painData }) {
           type="password"
           placeholder="Anthropic API Key (sk-ant-...)"
           value={apiKey}
-          onChange={e => setApiKey(e.target.value)}
+          onChange={handleKeyChange}
           style={{
             width: '100%',
             padding: '0.5rem 0.75rem',

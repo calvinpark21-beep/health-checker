@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import AIAnalysis from './AIAnalysis';
 import PainInput from './PainInput';
@@ -83,7 +83,14 @@ const TooltipStyle = {
 
 export default function Dashboard({ data, onReset }) {
   const { workouts, byDay, totals } = data;
-  const [painData, setPainData] = useState({});
+  const [painData, setPainData] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('health_pain_data') || '{}'); }
+    catch { return {}; }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('health_pain_data', JSON.stringify(painData));
+  }, [painData]);
 
   const h = Math.floor(totals.durationMin / 60);
   const m = totals.durationMin % 60;
@@ -91,6 +98,10 @@ export default function Dashboard({ data, onReset }) {
   const start = workouts[0].start;
   const end = workouts[workouts.length - 1].start;
   const dateRange = `${start.getMonth()+1}/${start.getDate()} ~ ${end.getMonth()+1}/${end.getDate()}`;
+
+  const savedAt = data.savedAt
+    ? new Date(data.savedAt).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : null;
 
   const chartData = byDay.map(d => ({
     name: d.label,
@@ -109,7 +120,10 @@ export default function Dashboard({ data, onReset }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <div>
           <h1 style={{ color: '#e6edf3', fontSize: '1.2rem', fontWeight: '700' }}>🏃‍♂️ 주간 건강 리포트</h1>
-          <p style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 2 }}>{dateRange} · {totals.sessions}회 운동</p>
+          <p style={{ color: '#8b949e', fontSize: '0.8rem', marginTop: 2 }}>
+            {dateRange} · {totals.sessions}회 운동
+            {savedAt && <span style={{ color: '#484f58', marginLeft: '0.5rem' }}>· {savedAt} 업로드</span>}
+          </p>
         </div>
         <button
           onClick={onReset}

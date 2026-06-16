@@ -95,6 +95,22 @@ export function aggregateByDay(workouts) {
   return Object.values(map).sort((a, b) => a.key.localeCompare(b.key));
 }
 
+export function serializeWorkouts(workouts) {
+  return workouts.map(w => ({
+    ...w,
+    start: w.start?.toISOString() || null,
+    end: w.end?.toISOString() || null,
+  }));
+}
+
+export function deserializeWorkouts(data) {
+  return data.map(w => ({
+    ...w,
+    start: w.start ? new Date(w.start) : null,
+    end: w.end ? new Date(w.end) : null,
+  }));
+}
+
 export function weeklyTotals(workouts) {
   const typeCount = {};
   workouts.forEach(w => {
