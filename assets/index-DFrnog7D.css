@@ -1,0 +1,1 @@
+*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,sans-serif;-webkit-font-smoothing:antialiased}input,button{font-family:inherit}@media (max-width: 600px){.stat-grid{grid-template-columns:repeat(2,1fr)!important}}
